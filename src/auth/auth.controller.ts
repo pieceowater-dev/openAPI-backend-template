@@ -9,12 +9,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthRequest } from './interfaces/auth.request';
-import { AuthResponse } from './interfaces/auth.response';
+import { AuthRequestDto } from './interfaces/auth.request.dto';
+import { AuthResponseDto } from './interfaces/auth.response.dto';
 import { UserEntity } from '../users/entities/user.entity';
 import { AuthGuard } from './auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthTypes } from './enums/auth.types';
+import { RegisterRequestDto } from './interfaces/register.request.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -23,8 +24,16 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: AuthRequest): Promise<AuthResponse> {
-    return this.authService.signIn(signInDto.email, signInDto.password);
+  async signIn(@Body() signInDto: AuthRequestDto): Promise<AuthResponseDto> {
+    return await this.authService.signIn(signInDto.email, signInDto.password);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('register')
+  async register(
+    @Body() registerRequestDto: RegisterRequestDto,
+  ): Promise<string> {
+    return await this.authService.register(registerRequestDto);
   }
 
   @UseGuards(AuthGuard)
